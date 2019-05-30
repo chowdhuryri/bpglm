@@ -1,0 +1,234 @@
+---
+title: "bpglm: R package for Bivariate Poisson GLM with Covariates"
+author: "R. I. Chowdhury & M. A. Islam"
+date: "`r Sys.Date()`"
+output: 
+       pdf_document: default
+       html_document: default
+df_print: paged
+---
+
+## <center> <h1>... Draft ...</h1> </center>
+
+
+## 1. Introduction
+
+There is a growing interest in analyzing bivariate count outcomes with covariate dependence.  The bivariate Poisson models have emerged to address a wide range of applications in various fields where paired count data are correlated. Leiter and Hamadan [1] suggested bivariate probability models applicable to traffic accidents and fatalities. The bivariate Poisson distribution has been proposed using various assumptions. Among those, the most comprehensive one has been developed by Kocherlakota and Kocherlakota [2]. Islam and Chowdhury [3],  Chowdhury and Islam [4] and Islam and Chowdhury [5] developed untruncated and zero-truncated and right truncated bivariate Poisson model for covariate dependence based on the extended generalized linear model. The package (bpglm) is developed to fit those models.  This package could also be used to fit model for multivariate outcomes and theory is presented in the book on _Analysis of repeated measures data_ [6]. One can fit full model with varying number of covariates and likelihood ratio test could be performed for model selection. Also, Voung test [7] is available for model comparison. Full text of these papers can be downloaded from https://www.researchgate.net/profile/Rafiqul_Chowdhury3.
+
+## 2. The Bivariate Poisson-Poisson Model
+
+### Un-truncated
+The number of occurrences of the first event $Y_1$ in a given interval
+follow Poisson distribution with parameter $\lambda_1$ and the occurece of the 
+second event, $Y_2$, for given $Y_1$, is also Poisson with parameter, $\lambda_1 y_1$. Details along with the link functions can be found in Islam and Chowdhury [3]. The joint pdf of $Y_1$ and $Y_2$ is:
+
+$$g(y_1,y_2)=\frac{e^{-\lambda_1}\lambda_1^{y_1} e^{-\lambda_2 y_1}{(\lambda_2 y_1)}^{y_2}}{y_1! y_2!},\mbox{ } y_1 =0,1,...;\mbox{ } y_2=0,1,...;\mbox{ }\lambda_1, \mbox{ }\lambda_2 > 0.$$ 
+
+### Zero-truncated
+
+In some situations zero values of count outcomes may not be observed that 
+generates zero truncated count outcomes. For details please see [4]. The joint distribution of ZTBVP is:
+
+$$g^*(y_1,y_2)=\frac{\lambda_1^{y_1} {(\lambda_2 y_1)}^{y_2}}{y_1! y_2!(e^{-\lambda_2 y_1}-1)(e^{-\lambda_1}-1)},\mbox{ } y_1 =0,1,...;\mbox{ } y_2=0,1,...;\mbox{ }\lambda_1, \mbox{ }\lambda_2 > 0.$$ 
+
+### Right-truncated
+
+The joint distribution of RTBVP developed by Islam and Chowdhury [5] is:
+
+$$g(y_1,y_2) = c_1 c_2 e^{ - \lambda_1}\lambda_1^{y_1}e^{ - \lambda_2 y_1}(\lambda_2 y_1)^{y_2}/(y_1! y_2!).
+$$
+
+## 3. The package
+
+This package is on github, and one can install using following code. Load the 
+'bpglm' library asusual.
+
+```
+## install.packages("devtools") 
+## library(devtools)
+## devtools::install_github("chowdhuryri/bpglm")
+```
+The main function to fit a model is _bpglm_ with following arguments:
+
+function (Y1Y2, X1 = NULL, X2 = NULL, mxit = 150, icob = NULL, 
+    mtype = 1, ppy = 1, presc = 1e+05, phi = NULL)
+
+Where, Y1Y2 is a data frmae with two outcomes, X1 is covariates without 
+constant term. Maximum number of default itarion is set to mxit=150. Starting 
+values for beta's icob by default is NULL, but could be supplied incase of
+convergence problem.
+
+## 4. Example Data Set One
+
+Fisrt data set comes from Health and Retirement Study [8]. First two columns are two outcomes (r10conde = number of conditions and utiliza10 = number of health care services utilizations). help(exdata) would display the data and variables descriptions or str(exdata) would provide details. Following code chunks load the library and displays first few rows and create a bivariate table between two comes.
+
+```{r}
+library(bpglm)
+str(exdata)
+head(exdata)
+table(exdata[,1:2])
+```
+### Fitting Un-truncated model
+
+We want to fit the bivariate Poisson model with constant only. The main is 
+bpglm() with minimum two arguments to fit the model. 
+
+### Reduced model (constant only model)
+
+Following r code fit the un-truncated model.
+```{r}   
+  mod1<-bpglm(exdata[,1:2],mtype=2) 
+```   
+The first argument of _bpglm_ function is a data frame with only two outcomes 
+which is first two columns in exdata and mtype=2 for untruncated model. The 
+ouput shows the loglikelihood value for each itaration and the function converged after six itarations. Next it shows the detail model statistics (eg., AIC, BIC, etc.). Parameter estimates table shows the coefficients, standard error, t-value, p-value adjusted standard error and adjusted p-values.
+
+Z-test for overdispersion is univariate test. T1 and T2 are multivariate test 
+for good-ness-of-fit and overdispersion. Pearson Ch-square is also 
+good-ness-of-fit test based on predicted observed outcomes.
+
+### Full model ( constant & covariates)
+
+Following r code fit the un-truncated model with four covariates.
+
+```{r}
+mod2<-bpglm(exdata[,1:2],exdata[,3:6],exdata[,3:6],mtype=2)    
+```
+
+The log likelihood value of full model is lower than reduced (constant only)
+mode. All statistics (AIC,BIC, etc.) are also lower for full model. Hence full 
+model should used. We can use likelihood ratio test between reduced and full 
+model. Following code does that.
+
+```{r}    
+ChiRF(mod1,mod2)   
+```
+We can also use Voung test for model comprison as follows:
+
+```{r}    
+vountest(mod1, mod2)   
+```
+Negative z-value suggests mod2 (full model) is better while positive z-value favours reduced model. Both likelihood ratio test and Voung test suggest that full model should be used.
+
+All results are stored in mod1 which is an R object. Following codes shows what
+statistics are stored in mod1 object and how to extract results and send to a
+CSV file which could be open in MS Excel for further manipulation.
+
+```{r}    
+names(mod2)   
+mod2$coeff   
+```
+
+## Example Data Set Two
+
+The second data set is on road safety published by Department for Transport, United Kingdom. This data set is publicly available for download from http://data.gov.uk/dataset/road-accidents-safety-data. The data comprises the information about the conditions of personal injury road accidents in Great Britain and the consequential casualties on public roads. 
+
+```{r}
+library(bpglm)
+str(ukdata)
+head(ukdata)
+table(ukdata[,1:2])
+```
+
+### Fitting zero-truncated model
+
+We want to fit the bivariate zero-truncated Poisson model with constant only. 
+
+### Reduced model (constant only model)
+
+Following r code fit the the reduced model. Output is omited.
+```{r,results='hide'}
+  mod3<-bpglm(ukdata[,1:2],mtype=4) 
+```   
+
+### Full model ( constant & covariates)
+
+Following r code fit the fullmodel with four covariates.
+
+```{r}
+mod4<-bpglm(ukdata[,1:2],ukdata[,3:7],ukdata[,3:7],mtype=4)    
+```
+
+```{r}    
+ChiRF(mod3,mod4)   
+```
+We can also use Voung test for model comprison as follows:
+
+```{r}    
+vountest(mod3, mod4)   
+```
+
+```{r}    
+names(mod4)   
+mod4$coeff   
+```
+### Fitting right-truncated model
+We will use data set one to fit this model too. The bivariate right-truncated Poisson model with constant only. 
+
+### Reduced model (constant only model)
+
+Following r code fit the the reduced model.
+
+```{r}
+  mod5<-bpglm(exdata[,1:2],mtype=6) 
+```   
+### Full model ( constant & covariates)
+
+Following r code fit the fullmodel with five covariates.  Here, we will use coefficients from model 2 (mod2) as initial value for convergence.
+
+```{r}
+mod6<-bpglm(exdata[,1:2],exdata[,3:6],exdata[,3:6],icob=as.matrix(mod2$coeff[,2],ncol=1),mtype=6)    
+```
+
+```{r}    
+ChiRF(mod5,mod6)   
+```
+We can also use Voung test for model comprison as follows:
+
+```{r}    
+vountest(mod5, mod6)   
+```
+
+```{r}    
+names(mod6)   
+mod6$coeff   
+```
+We can also use Voung test for model comprison between untruncated and truncated models as follows:
+
+
+```{r}    
+vountest(mod2, mod6)   
+```
+It seems truncated model is a better one. We can also compare other measures as follows:
+
+```{r}
+cbind(AIC=mod2$AIC[1],BIC=mod2$BIC[1],Loglik=mod2$logLik[1])
+cbind(AIC=mod6$AIC[1],BIC=mod6$BIC[1],Loglik=mod6$logLik[1])
+```
+All measures shows truncated model is better than untruncated one for this data set.
+
+**Acknowledgement**
+The authors acknowledge gratefully to the HRS (Health and Retirement Study) which is sponsored by the National Institute of Aging (Grant Number NIA U01AG09740) and conducted by the University of Michigan.The second data set was obtained from  “Police reported road accident statistics (STATS19) – Department for Transport” (http://data.gov.uk/dataset/road-accidents-safety-data). We acknowledge gratefully that the study is supported by the HEQEP sub-project 3293, University Grants Commission of Bangladesh and the World Bank.
+
+
+
+**References:**
+
+1. Leiter RE and Hamdan MA. Some Bivariate Probability Models Applicable to
+Traffic Accidents and Fatalities. _International Statistical Review_ (1973)
+41(1): 87-100.
+
+2. Kocherlakota S and Kocherlakota K. _Bivariate Discrete Distributions_. Marcel Dekker. 1992.
+
+3. Islam MA and Chowdhury RI. A Bivariate Poisson Models with Covariate Dependence. _Bulletin of Calcutta Mathematical Society_ (2015) 107: 11-20.
+
+4. Chowdhury RI and Islam MA. A Bivariate Poisson Models with Covariate Dependence. _Applied Mathematics_ (2016) 7: 1589-1598.
+
+5. Islam, M.A., Chowdhury, R.I. (2017). A generalized right truncated bivariate Poisson regression model with applications to health data. _PLOS ONE_ (2017) 12(6): e0178153.
+
+6.	Islam, M.A., Chowdhury, R.I.  _Analysis of Repeated Measures Data._ Springer, Singapore. 2017.
+
+7. Vuong QH. Likelihood ratio tests for model selection and non-nested hypotheses. _Econometrica_ (1989) 57: 307-333.
+
+8. Health and Retirement Study, (Wave 10) Public Use Dataset. Produced and Distributed by the University of Michigan with Funding from the National Institute on Aging (Grant Number NIA U01AG09740). Ann Arbor, MI. 
+
