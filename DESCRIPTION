@@ -1,0 +1,18 @@
+Package: bpglm
+Type: Package
+Title: Bivariate Poisson Generalized Linear Models with Covariate
+    Dependence
+Version: 0.1.0
+Author: Rafiqul Chowdhury
+Maintainer: Rafiqul Chowdhury <chowdhuryri@yahoo.com>
+Description: Fits bivariate Poisson regression models proposed by Islam and 
+  Chowdhury (2015), Zero Truncated BVP proposed by Chowdhury and Islam (2016) and bivariate right truncated Poisson regression by Islam and Chowdhury (2017).
+License: GPL (>= 2)
+LazyData: TRUE
+Date: 2018-02-19
+RoxygenNote: 6.1.1
+Imports: magic, hypergeo, gsl 
+Suggests: knitr,
+    rmarkdown
+Encoding: UTF-8
+
