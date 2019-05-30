@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1559240599857.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3183370956",
+    "id" : "BE3D983",
+    "lastKnownWriteTime" : 1559240765,
+    "last_content_update" : 1559240765561,
+    "path" : "D:/bpglm/README.md",
+    "project_path" : "README.md",
+    "properties" : {
+        "cursorPosition" : "0,17",
+        "scrollLine" : "0"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "markdown"
+}
