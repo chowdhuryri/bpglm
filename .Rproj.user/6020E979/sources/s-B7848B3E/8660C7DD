@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1559186589461.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "8660C7DD",
+    "lastKnownWriteTime" : 1559186742,
+    "last_content_update" : 1559186742869,
+    "path" : "D:/bpglm/bpglm.Rmd",
+    "project_path" : "bpglm.Rmd",
+    "properties" : {
+        "cursorPosition" : "47,19",
+        "scrollLine" : "40"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}
